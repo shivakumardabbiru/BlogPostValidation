@@ -1,11 +1,11 @@
 package Utilities;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
-
-import org.testng.Assert;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -21,16 +21,9 @@ public class ReusableFunctions {
 	 * Return the user id for the calling function 
 	 */
 
-	public static int getUserIdByUsername(String username) {
+	public static int getUserIdByUsername(Response response,String username) {
 		
-		Response response = RestAssured.given()
-				                       .log()
-				                       .all()
-				                       .contentType(ContentType.JSON)
-				                       .get("/users")
-				                       .then().log().all().extract().response();
-
-		Assert.assertEquals(response.statusCode(), 200, "Expected status code 200.");
+		
 
 		List<Map<String, Object>> users = response.jsonPath().getList("$");
 		
@@ -51,14 +44,8 @@ public class ReusableFunctions {
 	 */
 	
 	
-	public static List<Integer> getPostIdsForUser(int userId) {
+	public static List<Integer> getPostIdsForUser(Response response, int userId) {
 		
-		Response response = RestAssured.given()
-				                       .contentType(ContentType.JSON)
-				                       .get("/posts");
-
-		Assert.assertEquals(response.statusCode(), 200, "Expected status code 200.");
-
 		List<Map<String, Object>> posts = response.jsonPath().getList("$");
 		List<Integer> postIds = new ArrayList<>();
 
@@ -99,4 +86,16 @@ public class ReusableFunctions {
                    .then().log().all().extract().response();	
 	}
 
+	
+       public static String createReportwithDateTime() {
+		
+		DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd_MM_yyyy_HH_mm_ss");
+		LocalDateTime localTime = LocalDateTime.now();
+		String formattedTime = dateTimeFormatter.format(localTime);
+		String reportName = "Test Report" + formattedTime + ".html";
+		return reportName;
+		
+		
+	}
+	
 }

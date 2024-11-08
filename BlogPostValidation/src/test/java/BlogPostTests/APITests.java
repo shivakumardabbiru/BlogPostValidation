@@ -25,8 +25,8 @@ public class APITests {
 	public static void setupURL() throws StreamReadException, DatabindException, IOException {
 		// here we setup the default URL and API base path to use throughout the tests
 		//RestAssured.baseURI = "https://jsonplaceholder.typicode.com";
-		Map<String,String> data = JsonReader.readJson("Environment/QA/BlogPostEndpoints.json");
-		RestAssured.baseURI = data.get("BlogPostBaseUrl");
+		Map<String, Object> data = JsonReader.readJson("Environment/QA/BlogPostEndpoints.json");
+		RestAssured.baseURI = (String) data.get("BlogPostBaseUrl");
 	}
 
 	@Test(priority = 1)

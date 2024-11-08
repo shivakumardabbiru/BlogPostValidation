@@ -13,10 +13,10 @@ public class JsonReader {
 	
 	private static ObjectMapper objmapper = new ObjectMapper();
 	
-	public static Map<String, String> readJson(String jsonFilePath) throws StreamReadException, DatabindException, IOException {
+	public static Map<String, Object> readJson(String jsonFilePath) throws StreamReadException, DatabindException, IOException {
 		
 		String jsonPathToRead = System.getProperty("user.dir") + "/src/test/resources/" + jsonFilePath;
-		Map<String,String> data = objmapper.readValue(new File(jsonPathToRead), new TypeReference<Map<String,String>>() {});
+		Map<String,Object> data = objmapper.readValue(new File(jsonPathToRead), new TypeReference<Map<String,Object>>() {});
 		return data;
 		
 	}

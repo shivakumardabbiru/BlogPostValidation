@@ -1,5 +1,6 @@
 package BlogPostTests;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -7,6 +8,10 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
+import com.fasterxml.jackson.core.exc.StreamReadException;
+import com.fasterxml.jackson.databind.DatabindException;
+
+import Utilities.JsonReader;
 import Utilities.ReusableFunctions;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
@@ -17,9 +22,11 @@ public class APITests {
 	List<Integer> postidsForUser;
 
 	@BeforeClass
-	public static void setupURL() {
+	public static void setupURL() throws StreamReadException, DatabindException, IOException {
 		// here we setup the default URL and API base path to use throughout the tests
-		RestAssured.baseURI = "https://jsonplaceholder.typicode.com";
+		//RestAssured.baseURI = "https://jsonplaceholder.typicode.com";
+		Map<String,String> data = JsonReader.readJson("Environment/QA/BlogPostEndpoints.json");
+		RestAssured.baseURI = data.get("BlogPostBaseUrl");
 	}
 
 	@Test(priority = 1)

@@ -13,7 +13,7 @@ public class InvokeApiHelper {
 	
 	 private static RequestSpecification requestSpec;
 	 
-	 
+		 
 	// Constructor to initialize the base request specification
 	 public InvokeApiHelper() {
 		 
@@ -42,16 +42,16 @@ public class InvokeApiHelper {
 	   }
       
    // Reusable method for GET requests
-      public static Response sendGetRequest(String endpoint) {
+      public Response sendGetRequest(String endpoint) {
     	  
     	    return  requestSpec
     			    .given().log().all()
-    	            .get(endpoint);
-    	      	  
+    	            .get(endpoint);    
+   	      	  
        }
       
       // Method to add query parameters (if needed)
-      public void addQueryParam(String key, String value) {
+      public void addQueryParam(String key, int value) {
           requestSpec.queryParam(key, value);
       }
 

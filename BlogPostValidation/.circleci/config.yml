@@ -1,0 +1,35 @@
+version: 2.1
+
+executors:
+  java-executor:
+    docker:
+      - image: circleci/openjdk:11-jdk
+    working_directory: ~/project
+
+jobs:
+  build-and-test:
+    executor: java-executor
+    steps:
+      - checkout # Checkout code from your repository
+
+      - run:
+          name: Download Dependencies
+          command: |
+            # If you use Maven
+            mvn dependency:resolve
+            mvn verify -DskipTests
+
+      - run:
+          name: Run Tests
+          command: |
+            # Run tests using Maven (you can customize this command based on your build tool)
+            mvn test
+
+workflows:
+  version: 2
+  test-workflow:
+    jobs:
+      - build-and-test
+
+- store_test_results:
+    path: target/surefire-reports 

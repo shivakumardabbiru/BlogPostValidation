@@ -7,8 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import io.restassured.RestAssured;
-import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 
 public class ReusableFunctions {
@@ -75,17 +73,6 @@ public class ReusableFunctions {
 	 * It provides the post response as a return object to the calling function
 	 */
 	
-	public static Response performPost(String endpoint, String payload, Map<String,String>headers) {
-		
-		return RestAssured.given()
-		           .baseUri(endpoint)
-		           .headers(headers)
-		           .contentType(ContentType.JSON)
-                   .body(payload)
-                   .post()
-                   .then().log().all().extract().response();	
-	}
-
 	
        public static String createReportwithDateTime() {
 		

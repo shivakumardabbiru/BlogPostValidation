@@ -12,13 +12,13 @@ import com.fasterxml.jackson.core.exc.StreamReadException;
 import com.fasterxml.jackson.databind.DatabindException;
 
 import Reporting.ExtentReportManager;
+import Utilities.InvokeApiHelper;
 import Utilities.JsonReader;
 import Utilities.ReusableFunctions;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import io.restassured.specification.QueryableRequestSpecification;
 import io.restassured.specification.RequestSpecification;
-import io.restassured.specification.SpecificationQuerier;
 
 
 public class APITests {
@@ -26,34 +26,40 @@ public class APITests {
 
 	private int userId;
 	List<Integer> postidsForUser;
+	private static InvokeApiHelper apiHelper;
+   
 
 	@BeforeClass
 	public static void setupURL() throws StreamReadException, DatabindException, IOException {
+		
 		// here we setup the default URL and API base path to use throughout the tests
 		Map<String, Object> data = JsonReader.readJson("Environment/QA/BlogPostEndpoints.json");
 		RestAssured.baseURI = (String) data.get("BlogPostBaseUrl");
+		
+		 // Initialize the utility class
+        apiHelper = new InvokeApiHelper();
 	}
+	
+	
 
 	@Test(priority = 1)
 	public void findUser() {
 		
-		RequestSpecification request = RestAssured.given();
+		String endpoint = ("/Users");
+			
+		Response response = InvokeApiHelper.sendGetRequest(endpoint);
 		
-		                     request.log().all();
-		
-		Response response = request.get("/users")
-				                   .then().log().all().extract().response();
-		
-		QueryableRequestSpecification qrb = SpecificationQuerier.query(request);
+		response.then().log().all().extract().response();
+		QueryableRequestSpecification queryableSpec = apiHelper.getQueryableSpec();
 		
 		 // Log request and response to the Extent Report
-        ExtentReportManager.logRequest(qrb);
-        ExtentReportManager.logResponse(response, "GET /users");
+        ExtentReportManager.logRequest(queryableSpec);
+        ExtentReportManager.logResponse(response, endpoint);
 
 		Assert.assertEquals(response.statusCode(), 200, "Expected status code 200.");
 		
 		userId = ReusableFunctions.getUserIdByUsername(response, "Delphine");
-		System.out.println("User found: ID = " + userId);
+
 	}
 
 	@Test(priority = 2, dependsOnMethods = "findUser")

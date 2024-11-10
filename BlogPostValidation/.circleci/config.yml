@@ -1,35 +1,45 @@
+# This config was automatically generated from your source code
+# Stacks detected: deps:java:BlogPostValidation
 version: 2.1
-
-executors:
-  java-executor:
-    docker:
-      - image: circleci/openjdk:11-jdk
-    working_directory:  ~/project/BlogPostValidation
-
 jobs:
-  build-and-test:
-    executor: java-executor
+  test-java:
+    docker:
+      - image: cimg/openjdk:17.0
+    working_directory: ~/project/BlogPostValidation
     steps:
-      - checkout # Checkout code from your repository
-
+      - checkout:
+          path: ~/project
       - run:
-          name: Download Dependencies
-          command: |
-            # If you use Maven
-            mvn dependency:resolve
-            mvn verify -DskipTests
-
+          name: Calculate cache key
+          command: |-
+            find . -name 'pom.xml' -o -name 'gradlew*' -o -name '*.gradle*' | \
+                    sort | xargs cat > /tmp/CIRCLECI_CACHE_KEY
+      - restore_cache:
+          key: cache-{{ checksum "/tmp/CIRCLECI_CACHE_KEY" }}
       - run:
-          name: Run Tests
-          command: |
-            # Run tests using Maven (you can customize this command based on your build tool)
-            mvn test
-
+          command: mvn verify
+      - store_test_results:
+          path: target/surefire-reports
+      - save_cache:
+          key: cache-{{ checksum "/tmp/CIRCLECI_CACHE_KEY" }}
+          paths:
+            - ~/.m2/repository
+  deploy:
+    # This is an example deploy job, not actually used by the workflow
+    docker:
+      - image: cimg/base:stable
+    steps:
+      # Replace this with steps to deploy to users
+      - run:
+          name: deploy
+          command: '#e.g. ./deploy.sh'
 workflows:
-  version: 2
-  test-workflow:
+  build-and-test:
     jobs:
-      - build-and-test
-
-- store_test_results:
-    path: target/Reports
+      - test-java
+    # - deploy:
+    #     requires:
+    #       - test-java
+	
+	- store_test_results:
+	    path: /path/to/test-results # e.g., `target/surefire-reports` for Maven projects

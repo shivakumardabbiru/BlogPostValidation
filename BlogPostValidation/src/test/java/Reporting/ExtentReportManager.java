@@ -30,7 +30,7 @@ public class ExtentReportManager implements ITestListener {
     public void onStart(ITestContext context) {
         // Initialize Extent Reports with the Spark Reporter
     	String fileName = ReusableFunctions.createReportwithDateTime();
-    	String fullReportPath = System.getProperty("user.dir") + "\\Reports\\" + fileName;
+    	String fullReportPath = ReusableFunctions.createReportDirectory(fileName);  	
         ExtentSparkReporter sparkReporter = new ExtentSparkReporter(fullReportPath);
         
         sparkReporter.config().setDocumentTitle("API Test Report");

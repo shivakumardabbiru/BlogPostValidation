@@ -43,3 +43,7 @@ workflows:
 	
 	- store_test_results:
 	    path: /path/to/test-results # e.g., `target/surefire-reports` for Maven projects
+		
+	- store_artifacts:
+		    path: Reports/
+		    destination: extent-reports

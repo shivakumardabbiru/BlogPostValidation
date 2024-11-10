@@ -1,5 +1,6 @@
 package Utilities;
 
+import java.io.File;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -84,5 +85,20 @@ public class ReusableFunctions {
 		
 		
 	}
+       
+       public static String createReportDirectory(String fileName) {
+    	   
+           // Create the Reports directory if it does not exist
+           String reportsDir = System.getProperty("user.dir") + "/Reports";
+           File directory = new File(reportsDir);
+           
+           if (!directory.exists()) {
+               directory.mkdirs(); // Create the directory
+           }
+
+           // Construct the full path to the report file
+           String fullReportPath = reportsDir + "/" + fileName;
+           return fullReportPath;
+       }
 	
 }

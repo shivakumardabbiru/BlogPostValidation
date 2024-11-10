@@ -1,5 +1,9 @@
 package Reporting;
 
+import java.util.List;
+import java.util.Map;
+
+import org.testng.Assert;
 import org.testng.ITestContext;
 import org.testng.ITestListener;
 import org.testng.ITestResult;
@@ -114,5 +118,33 @@ public class ExtentReportManager implements ITestListener {
 
         // Log the table to the Extent Report
         test.info("Request Headers:\n" + tableBuilder.toString());
+    }
+    
+    public static void validateEmailsWithReport(Response response) {
+        List<Map<String, Object>> comments = response.jsonPath().getList("$");
+
+        // Initialize the HTML table
+        StringBuilder tableBuilder = new StringBuilder();
+        tableBuilder.append("<table border='1'>")
+                    .append("<tr><th>Email</th><th>Validation Result</th></tr>");
+
+        for (Map<String, Object> comment : comments) {
+            String commentEmail = (String) comment.get("email");
+            boolean isValid = ReusableFunctions.isValidEmail(commentEmail);
+
+            // Add row for each email validation result
+            tableBuilder.append("<tr>")
+                        .append("<td>").append(commentEmail).append("</td>")
+                        .append("<td>").append(isValid ? "Valid" : "Invalid").append("</td>")
+                        .append("</tr>");
+
+            // Log assertion (optional, if you still want to assert separately)
+            Assert.assertTrue(isValid, "Invalid email: " + commentEmail);
+        }
+
+        tableBuilder.append("</table>"); // Close the table
+
+        // Log the constructed table to the Extent Report
+        test.info("Email Validation Results:\n" + tableBuilder.toString());
     }
 }

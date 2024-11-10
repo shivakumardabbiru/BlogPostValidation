@@ -1,6 +1,7 @@
 package BlogPostTests;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -47,7 +48,7 @@ public class APITests {
 
 		String endpoint = ("/Users");
 
-		Response response = apiHelper.sendGetRequest(endpoint);
+		Response response = apiHelper.sendGetRequest(endpoint, null);
 
 		response.then().log().all().extract().response();
 
@@ -77,7 +78,7 @@ public class APITests {
 
 		String endpoint = "/posts";
 
-		Response response = apiHelper.sendGetRequest(endpoint);
+		Response response = apiHelper.sendGetRequest(endpoint, null);
 
 		QueryableRequestSpecification queryableSpec = apiHelper.getQueryableSpec();
 		// Log request and response to the Extent Report
@@ -108,10 +109,13 @@ public class APITests {
 
 			String endpoint = "/comments";
 
-			// Add a query parameter to the request
-			apiHelper.addQueryParam("postId", postId);
+			// Prepare query parameters
+			Map<String, Object> queryParams = new HashMap<>();
+			queryParams.put("postId", postId);
 
-			Response response = apiHelper.sendGetRequest(endpoint);
+			Response response = apiHelper.sendGetRequest(endpoint, queryParams);
+
+			System.out.println("postid " + postId + ": " + response.asPrettyString());
 
 			QueryableRequestSpecification queryableSpec = apiHelper.getQueryableSpec();
 			// Log request and response to the Extent Report
@@ -121,13 +125,9 @@ public class APITests {
 
 			Assert.assertEquals(response.statusCode(), 200, "Expected status code 200.");
 
-			List<Map<String, Object>> comments = response.jsonPath().getList("$");
+			// Log email validation results in a table format to the Extent Report
+			ExtentReportManager.validateEmailsWithReport(response);
 
-			for (Map<String, Object> comment : comments) {
-				String commentEmail = (String) comment.get("email");
-				Assert.assertTrue(ReusableFunctions.isValidEmail(commentEmail), "Invalid email: " + commentEmail);
-			}
 		}
 	}
-
 }

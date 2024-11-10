@@ -120,6 +120,8 @@ public class ExtentReportManager implements ITestListener {
         test.info("Request Headers:\n" + tableBuilder.toString());
     }
     
+    //This method will validate the email from each comment and log the same in the report
+    
     public static void validateEmailsWithReport(Response response) {
         List<Map<String, Object>> comments = response.jsonPath().getList("$");
 

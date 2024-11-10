@@ -97,7 +97,7 @@ public class ExtentReportManager implements ITestListener {
         }
     }
     
-    
+    //This method helps to log the request headers in a tabular format in the reprot.
     public static void logReqeustHeaders(QueryableRequestSpecification qrb) {
         Headers headers = qrb.getHeaders();
 

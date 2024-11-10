@@ -3,7 +3,7 @@ jobs:
   test-java:
     docker:
       - image: cimg/openjdk:17.0
-    working_directory: ~/project/BlogPostValidation
+    working_directory: ~/project
     steps:
       - checkout:
           path: ~/project

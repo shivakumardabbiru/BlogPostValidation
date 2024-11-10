@@ -32,4 +32,4 @@ workflows:
       - build-and-test
 
 - store_test_results:
-    path: target/surefire-reports 
+    path: target/Reports

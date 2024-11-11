@@ -78,10 +78,11 @@ public class ExtentReportManager implements ITestListener {
     }
     
     // Utility method to log request details
-    public static void logRequest(QueryableRequestSpecification qrb) {
+    public static void logRequest(QueryableRequestSpecification qrb, String endpoint) {
         if (test != null) {
             test.info("Request Details:");
             test.info("Endpoint: " + qrb.getBaseUri());
+            test.info("Resource: " + endpoint);
             test.info("Request Method: " + qrb.getMethod());
             logReqeustHeaders(qrb);
             test.info("Request Body: " + (qrb.getBody() != null ? qrb.getBody().toString() : "No body"));
@@ -89,7 +90,7 @@ public class ExtentReportManager implements ITestListener {
     }
 
     // Utility method to log response details
-    public static void logResponse(Response response, String endpoint) {
+    public static void logResponse(Response response) {
         if (test != null) {
             test.info("Status Code: " + response.getStatusCode());
             String prettyJson = response.getBody().prettyPrint();

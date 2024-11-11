@@ -1,3 +1,7 @@
 {
-	"BlogPostBaseUrl" : "https://jsonplaceholder.typicode.com"
+	"BlogPostBaseUrl" : "https://jsonplaceholder.typicode.com",
+	"UserName" : "Delphine",
+	"userEndpoint" : "/users",
+	"postsEndpoint" : "/Posts",
+	"commentsEndpoint" : "/Comments"
 }

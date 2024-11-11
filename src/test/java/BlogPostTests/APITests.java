@@ -4,11 +4,15 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.testng.Assert;
+import org.testng.SkipException;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
+import com.aventstack.extentreports.ExtentTest;
+import com.aventstack.extentreports.Status;
 import com.fasterxml.jackson.core.exc.StreamReadException;
 import com.fasterxml.jackson.databind.DatabindException;
 
@@ -25,6 +29,10 @@ public class APITests {
 	private int userId;
 	List<Integer> postidsForUser;
 	private static InvokeApiHelper apiHelper;
+	private static String userToSearch;
+	private static String userEndpoint;
+	private static String postsEndpoint;
+	private static String commentsEndpoint;
 
 	@BeforeClass
 	public static void setupURL() throws StreamReadException, DatabindException, IOException {
@@ -32,6 +40,10 @@ public class APITests {
 		// here we setup the default URL and API base path to use throughout the tests
 		Map<String, Object> data = JsonReader.readJson("Environment/QA/BlogPostEndpoints.json");
 		RestAssured.baseURI = (String) data.get("BlogPostBaseUrl");
+		userToSearch = (String) data.get("UserName");
+		userEndpoint = (String) data.get("userEndpoint");
+		postsEndpoint = (String) data.get("postsEndpoint");
+		commentsEndpoint = (String) data.get("commentsEndpoint");
 
 		// Initialize the utility class
 		apiHelper = new InvokeApiHelper();
@@ -46,23 +58,25 @@ public class APITests {
 	@Test(priority = 1)
 	public void findUser() {
 
-		String endpoint = ("/Users");
-
-		Response response = apiHelper.sendGetRequest(endpoint, null);
+		Response response = apiHelper.sendGetRequest(userEndpoint, null);
 
 		response.then().log().all().extract().response();
 
 		QueryableRequestSpecification queryableSpec = apiHelper.getQueryableSpec();
 
 		// Log request and response to the Extent Report
-		ExtentReportManager.logRequest(queryableSpec);
+		ExtentReportManager.logRequest(queryableSpec,userEndpoint);
 
-		ExtentReportManager.logResponse(response, endpoint);
+		ExtentReportManager.logResponse(response );
 
 		Assert.assertEquals(response.statusCode(), 200, "Expected status code 200.");
 
 		// Get the user id of the user Delphine.
-		userId = ReusableFunctions.getUserIdByUsername(response, "Delphine");
+		userId = ReusableFunctions.getUserIdByUsername(response, userToSearch);
+
+		// Handle potential null values with Optional
+		Optional<String> optionalUserID = Optional.ofNullable(String.valueOf(userId));
+		Assert.assertTrue(optionalUserID.isPresent(), "The field 'UserID' is missing or null");
 
 	}
 
@@ -76,15 +90,13 @@ public class APITests {
 	@Test(priority = 2, dependsOnMethods = "findUser")
 	public void getPostsForUser() {
 
-		String endpoint = "/posts";
-
-		Response response = apiHelper.sendGetRequest(endpoint, null);
+		Response response = apiHelper.sendGetRequest(postsEndpoint, null);
 
 		QueryableRequestSpecification queryableSpec = apiHelper.getQueryableSpec();
 		// Log request and response to the Extent Report
-		ExtentReportManager.logRequest(queryableSpec);
+		ExtentReportManager.logRequest(queryableSpec, postsEndpoint);
 
-		ExtentReportManager.logResponse(response, endpoint);
+		ExtentReportManager.logResponse(response);
 
 		Assert.assertEquals(response.statusCode(), 200, "Expected status code 200.");
 
@@ -105,23 +117,22 @@ public class APITests {
 
 	@Test(priority = 3, dependsOnMethods = "getPostsForUser")
 	public void validateUserPostCommentsEmails() {
-		for (int postId : postidsForUser) {
 
-			String endpoint = "/comments";
+		for (int postId : postidsForUser) {
 
 			// Prepare query parameters
 			Map<String, Object> queryParams = new HashMap<>();
 			queryParams.put("postId", postId);
 
-			Response response = apiHelper.sendGetRequest(endpoint, queryParams);
+			Response response = apiHelper.sendGetRequest(commentsEndpoint, queryParams);
 
 			System.out.println("postid " + postId + ": " + response.asPrettyString());
 
 			QueryableRequestSpecification queryableSpec = apiHelper.getQueryableSpec();
 			// Log request and response to the Extent Report
-			ExtentReportManager.logRequest(queryableSpec);
+			ExtentReportManager.logRequest(queryableSpec, commentsEndpoint);
 
-			ExtentReportManager.logResponse(response, endpoint);
+			ExtentReportManager.logResponse(response);
 
 			Assert.assertEquals(response.statusCode(), 200, "Expected status code 200.");
 

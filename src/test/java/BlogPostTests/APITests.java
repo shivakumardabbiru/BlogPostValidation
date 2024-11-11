@@ -103,6 +103,7 @@ public class APITests {
 		// Call the getPostIDs method to retrieve all the posts for user Delphine
 
 		postidsForUser = ReusableFunctions.getPostIdsForUser(response, userId);
+		
 
 		Assert.assertFalse(postidsForUser.isEmpty(), "No posts found for user with ID " + userId);
 	}
@@ -126,9 +127,8 @@ public class APITests {
 
 			Response response = apiHelper.sendGetRequest(commentsEndpoint, queryParams);
 
-			System.out.println("postid " + postId + ": " + response.asPrettyString());
-
 			QueryableRequestSpecification queryableSpec = apiHelper.getQueryableSpec();
+			
 			// Log request and response to the Extent Report
 			ExtentReportManager.logRequest(queryableSpec, commentsEndpoint);
 
